@@ -4,15 +4,13 @@
 
 using namespace std; 
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
 int main()
 {
-    if (!glfwInit())
-    {
+    if (!glfwInit()) {
         cout << "Failed to initialize GLFW" << endl;
         return -1;
     }
@@ -22,11 +20,10 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "ZMMR", NULL, NULL);
-    if (window == NULL)
-    {
+    GLFWwindow* window = glfwCreateWindow(800, 600, "ZMMR", NULL, NULL);
+    if (window == NULL) {
         cout << "Failed to open GLFW window" << endl;
+        glfwTerminate();
         return -1;
     }
     glfwMakeContextCurrent(window);
@@ -34,14 +31,14 @@ int main()
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         cout << "Failed to initialize GLAD" << endl;
+        glfwTerminate();
         return -1;
     }
 
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    while(!glfwWindowShouldClose(window))
-    {
+    while(!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
         glfwPollEvents();    
     }
