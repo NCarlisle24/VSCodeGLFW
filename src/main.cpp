@@ -3,8 +3,6 @@
 #include <GLFW/glfw3.h>
 #include <fstream>
 
-using namespace std; 
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
@@ -12,7 +10,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 int main()
 {
     if (!glfwInit()) {
-        cout << "Failed to initialize GLFW" << endl;
+        std::cout << "Failed to initialize GLFW" << std::endl;
         return -1;
     }
 
@@ -23,13 +21,13 @@ int main()
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "ZMMR", NULL, NULL);
     if (window == NULL) {
-        cout << "Failed to open GLFW window" << endl;
+        std::cout << "Failed to open GLFW window" << std::endl;
         return -1;
     }
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        cout << "Failed to initialize GLAD" << endl;
+        std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
@@ -57,10 +55,14 @@ int main()
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 
-    string vertexShaderSourceText;
-    string currentLine;
-    ifstream vertexFile("shader.vert");
-    while (getline(vertexFile, currentLine)) {
+    std::string vertexShaderSourceText;
+    std::string currentLine;
+    std::ifstream vertexFile("./src/shader.vert");
+
+    if (!vertexFile.is_open()) {
+        std::cout << "panic" << std::endl;
+    }
+    while (std::getline(vertexFile, currentLine)) {
         vertexShaderSourceText += currentLine;
         vertexShaderSourceText.push_back('\n');
     }
@@ -71,9 +73,21 @@ int main()
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
 
-    string fragmentShaderSourceText;
-    ifstream fragmentFile("shader.frag");
-    while (getline(fragmentFile, currentLine)) {
+    int success;
+    char infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if(!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR: Vertex shader compilation failed.\n" << infoLog << std::endl;
+    }
+
+    vertexFile.close();
+
+
+    std::string fragmentShaderSourceText;
+    std::ifstream fragmentFile("./src/shader.frag");
+
+    while (std::getline(fragmentFile, currentLine)) {
         fragmentShaderSourceText += currentLine;
         fragmentShaderSourceText.push_back('\n');
     }
@@ -85,9 +99,36 @@ int main()
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
 
-    while(!glfwWindowShouldClose(window)) {
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if(!success) {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR: Fragment shader compilation failed.\n" << infoLog << std::endl;
+    }
+
+    fragmentFile.close();
+
+
+    unsigned int shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        std::cout << "ERROR: Shader program link failed.\n" << infoLog << std::endl;
+    }
+
+    glDeleteProgram(vertexShader);
+    glDeleteProgram(fragmentShader);
+
+    glDeleteBuffers(1, &VBO);
+    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
+    while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
         glfwPollEvents();
+        glDrawArrays(GL_TRIANGLES, 0, 3);
     }
 
     glfwTerminate();
