@@ -38,7 +38,13 @@ int main()
     float vertices[] = {
         -0.5f, -0.5f, 0.0f,
         0.5f,  -0.5f, 0.0f,
-        0.0f,   0.5f, 0.0f
+        -0.5f,  0.5f, 0.0f,
+        0.5f,   0.5f, 0.0f
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2,
+        1, 2, 3
     };
 
 
@@ -52,6 +58,12 @@ int main()
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void*)0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
@@ -59,13 +71,15 @@ int main()
     Shader shader("./src/shaders/shader.vert", "./src/shaders/shader.frag");
 
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 
     shader.use();
     glBindVertexArray(VAO);
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
         glfwPollEvents();
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        shader.setUniform1f("time", glfwGetTime());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
     glfwTerminate();

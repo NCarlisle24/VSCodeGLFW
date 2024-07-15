@@ -85,3 +85,19 @@ void Shader::use() {
 void Shader::unuse() {
     glUseProgram(0);
 }
+
+void Shader::setUniform1f(const char* name, const float val) {
+    glUniform1f(glGetUniformLocation(id, name), val);
+}
+
+void Shader::setUniform2f(const char* name, const float val1, const float val2) {
+    glUniform2f(glGetUniformLocation(id, name), val1, val2);
+}
+
+void Shader::setUniform3f(const char* name, const float val1, const float val2, const float val3) {
+    glUniform3f(glGetUniformLocation(id, name), val1, val2, val3);
+}
+
+void Shader::setUniform4f(const char* name, const float val1, const float val2, const float val3, const float val4) {
+    glUniform4f(glGetUniformLocation(id, name), val1, val2, val3, val4);
+}
