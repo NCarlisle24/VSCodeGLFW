@@ -4,12 +4,14 @@
 #include <fstream>
 #include <shader/shader.hpp>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image/stb_image.h>
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-int main()
-{
+int main() {
     if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW" << std::endl;
         return -1;
@@ -76,6 +78,9 @@ int main()
     
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
+
+    // int width, height, nrChannels;
+    // unsigned char *data = stbi_load("./textures/image.png", &width, &height, &nrChannels, 0); 
 
     shader.use();
     glBindVertexArray(VAO);
