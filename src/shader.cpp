@@ -101,3 +101,7 @@ void Shader::setUniform3f(const char* name, const float val1, const float val2, 
 void Shader::setUniform4f(const char* name, const float val1, const float val2, const float val3, const float val4) {
     glUniform4f(glGetUniformLocation(id, name), val1, val2, val3, val4);
 }
+
+void Shader::setUniform1i(const char* name, const int val) {
+    glUniform1i(glGetUniformLocation(id, name), val);
+}
