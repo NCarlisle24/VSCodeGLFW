@@ -38,9 +38,9 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,    -1.0f, -1.0f,
-        0.5f,  -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,     1.0f, -1.0f,
-        -0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,    -1.0f,  1.0f,
+        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,     0.0f, 0.0f, // x, y, z,  r, g, b,  s, t
+        0.5f,  -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+        -0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,     0.0f,  1.0f,
         0.5f,   0.5f, 0.0f,     1.0f, 0.0f, 0.0f,     1.0f,  1.0f
     };
 
@@ -65,11 +65,11 @@ int main() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 
-    glActiveTexture(GL_TEXTURE0);
+    unsigned int texture[2];
+    glGenTextures(2, texture);
 
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -77,13 +77,33 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int width, height, nrChannels;
-    unsigned char *data = stbi_load("./textures/image.png", &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load("./textures/wall.png", &width, &height, &nrChannels, 0);
     if (!data) {
-        std::cout << "Failed to load texture." << std::endl;
+        std::cout << "Failed to load wall texture." << std::endl;
     }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(data);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture[1]);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_set_flip_vertically_on_load(true);
+    data = stbi_load("./textures/smile.png", &width, &height, &nrChannels, 0);
+    if (!data) {
+        std::cout << "Failed to load smile texture." << std::endl;
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
     stbi_image_free(data);
 
 
@@ -99,14 +119,16 @@ int main() {
     glEnableVertexAttribArray(2);
 
     Shader shader("./shaders/shader.vert", "./shaders/shader.frag");
-    shader.setUniform1i("texture1", 0);
 
     glBindVertexArray(0);
 
     shader.use();
+    shader.setUniform1i("wallTexture", 0);
+    shader.setUniform1i("smileTexture", 1);
     glBindVertexArray(VAO);
     while (!glfwWindowShouldClose(window)) {
         shader.setUniform1f("time", glfwGetTime());
+
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glDrawArrays(GL_TRIANGLES, 0, 3);
 

@@ -6,10 +6,12 @@ layout (location = 2) in vec2 aTexCoord;
 uniform float time;
 
 out vec3 inColor;
-out vec2 inTexCoord;
+out vec2 wallTexCoord;
+out vec2 smileTexCoord;
 
 void main() {
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
     inColor = aColor;
-    inTexCoord = aTexCoord;
+    wallTexCoord = aTexCoord;
+    smileTexCoord = aTexCoord;
 }

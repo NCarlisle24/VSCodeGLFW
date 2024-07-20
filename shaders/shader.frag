@@ -2,11 +2,13 @@
 out vec4 FragColor;
 
 uniform float time;
-uniform sampler2D texture1;
+uniform sampler2D wallTexture;
+uniform sampler2D smileTexture;
 
 in vec3 inColor;
-in vec2 inTexCoord;
+in vec2 wallTexCoord;
+in vec2 smileTexCoord;
 
 void main() {
-    FragColor = mix(texture(texture1, inTexCoord), vec4(inColor, 1.0), 0.2);
+    FragColor = mix(texture(wallTexture, wallTexCoord), texture(smileTexture, smileTexCoord), 0.2);
 }
