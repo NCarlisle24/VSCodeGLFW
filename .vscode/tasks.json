@@ -9,6 +9,7 @@
                 "-g",
                 "-std=c++17",
                 "-I${workspaceFolder}/include",
+                "-IC:\\Program Files\\Cincludes",
                 "-L${workspaceFolder}/lib",
                 "${workspaceFolder}/src/main.cpp",
                 "${workspaceFolder}/src/glad.c",

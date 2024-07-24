@@ -3,6 +3,9 @@
 #include <GLFW/glfw3.h>
 #include <fstream>
 #include <shader/shader.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
@@ -123,7 +126,7 @@ int main() {
     glBindVertexArray(0);
 
     shader.use();
-    shader.setUniform1i("wallTexture", 0);
+    shader.setUniform1i("wallTexture", 0); // not required for index 0
     shader.setUniform1i("smileTexture", 1);
     glBindVertexArray(VAO);
     while (!glfwWindowShouldClose(window)) {
